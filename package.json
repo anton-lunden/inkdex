@@ -1,0 +1,56 @@
+{
+  "name": "inkdex",
+  "version": "0.1.0",
+  "description": "MCP server that makes your markdown docs searchable",
+  "license": "Apache-2.0",
+  "author": "Anton Lundén",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kandobyte/inkdex"
+  },
+  "bugs": {
+    "url": "https://github.com/kandobyte/inkdex/issues"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "main": "dist/cli.js",
+  "bin": {
+    "inkdex": "dist/cli.js"
+  },
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/cli.ts",
+    "start": "node dist/cli.js",
+    "test": "npm run test:unit && npm run test:integration",
+    "test:unit": "tsx --test test/unit/**/*.test.ts",
+    "test:integration": "tsx --test --test-concurrency=1 test/integration/**/*.test.ts",
+    "check": "biome check .",
+    "format": "biome format --write ."
+  },
+  "keywords": [
+    "mcp",
+    "mcp-server",
+    "model-context-protocol",
+    "documentation",
+    "semantic-search",
+    "embeddings",
+    "markdown",
+    "rag"
+  ],
+  "dependencies": {
+    "@huggingface/transformers": "^3.8.1",
+    "@modelcontextprotocol/sdk": "^1.25.3",
+    "gray-matter": "^4.0.3"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.3.14",
+    "@types/node": "^25.1.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}
