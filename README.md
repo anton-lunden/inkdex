@@ -1,6 +1,7 @@
 # Inkdex
 
-RAG for your markdown docs, exposed as an MCP tool.
+RAG for your markdown docs, exposed over MCP.
+
 ## Tools
 
 | Tool | Description |

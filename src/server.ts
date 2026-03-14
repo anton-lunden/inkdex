@@ -11,7 +11,6 @@ import { getChunkCount } from "./store/db.js";
 import type { SearchResult } from "./types.js";
 import { getVersion } from "./version.js";
 
-// Maximum total tokens across all returned results.
 const TOKEN_BUDGET = 8000;
 
 async function createServer(embedder: Embedder): Promise<Server> {

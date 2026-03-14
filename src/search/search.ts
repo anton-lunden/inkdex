@@ -6,7 +6,6 @@ import type { ChunkRow, SearchResult } from "../types.js";
 // Weight for vector vs keyword signal (0 = keyword only, 1 = vector only)
 const ALPHA = 0.7;
 
-/** Min-max normalize a map of scores to 0-1 range. */
 function normalize(scores: Map<number, number>): Map<number, number> {
   if (scores.size === 0) return scores;
 
@@ -26,7 +25,7 @@ function normalize(scores: Map<number, number>): Map<number, number> {
   return result;
 }
 
-/** @package Hybrid ranking using RelativeScoreFusion (min-max + weighted combination). */
+// RelativeScoreFusion: min-max normalise each signal then combine with weighted sum.
 export function rankChunksHybrid(
   chunks: ChunkRow[],
   queryEmbedding: number[],
