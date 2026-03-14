@@ -39,6 +39,6 @@ Runs over stdio. For remote access, use an MCP gateway ([MCPBox](https://github.
 
 ## How it works
 
-Markdown files are parsed into sections by heading structure and split into ~200-token chunks. Each chunk is prefixed with a `<context>` preamble containing the heading path (e.g. `API Reference > Authentication`). Chunks are embedded locally using `all-MiniLM-L6-v2` and stored in SQLite.
+Markdown files are parsed by heading structure into ~200-token chunks, each prefixed with its heading path (e.g. `API Reference > Authentication`). Chunks are embedded locally using `all-MiniLM-L6-v2` and stored in SQLite.
 
-Search combines vector similarity and BM25 keyword matching using [RelativeScoreFusion](https://weaviate.io/blog/hybrid-search-fusion-algorithms).
+Search combines vector similarity and BM25 full-text matching, fused with [Reciprocal Rank Fusion](https://cormack.uwaterloo.ca/cormacksigir09-rrf.pdf).
