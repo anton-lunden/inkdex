@@ -6,13 +6,7 @@ import { Embedder } from "./embedder/embedder.js";
 import { indexDocs } from "./ingest/index-docs.js";
 import { logger } from "./logger.js";
 import { startServer } from "./server.js";
-import {
-  closeDb,
-  getAllDocumentHashes,
-  openDb,
-  removeDocument,
-  runInTransaction,
-} from "./store/db.js";
+import { closeDb, openDb } from "./store/db.js";
 
 process.on("uncaughtException", (error) => {
   logger.error({ error }, "Uncaught exception");
@@ -31,53 +25,17 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
-  const docsPaths = await Promise.all(
-    docsPathEnv
-      .split(",")
-      .map((p) => p.trim())
-      .filter((p) => p.length > 0)
-      .map(async (p) => {
-        const resolved = resolve(p);
-        const info = await stat(resolved).catch(() => null);
-        if (!info?.isDirectory()) {
-          logger.error(
-            { path: resolved },
-            "DOCS_PATH entry is not a directory",
-          );
-          process.exit(1);
-        }
-        return resolved;
-      }),
-  );
-
-  if (docsPaths.length === 0) {
-    logger.error("DOCS_PATH contains no valid entries");
+  const docsPath = resolve(docsPathEnv.trim());
+  const info = await stat(docsPath).catch(() => null);
+  if (!info?.isDirectory()) {
+    logger.error({ path: docsPath }, "DOCS_PATH is not a directory");
     process.exit(1);
   }
 
   const embedder = await Embedder.load();
-  openDb();
+  openDb(docsPath);
 
-  // Remove documents from dirs no longer in DOCS_PATH
-  const allHashes = getAllDocumentHashes();
-  const staleKeys = Object.keys(allHashes).filter(
-    (key) => !docsPaths.some((dir) => key.startsWith(`${dir}/`)),
-  );
-  if (staleKeys.length > 0) {
-    logger.info(
-      { count: staleKeys.length },
-      "Removing documents from inactive directories",
-    );
-    runInTransaction(() => {
-      for (const key of staleKeys) {
-        removeDocument(key);
-      }
-    });
-  }
-
-  for (const dir of docsPaths) {
-    await indexDocs(embedder, dir);
-  }
+  await indexDocs(embedder, docsPath);
 
   await startServer(embedder);
 }

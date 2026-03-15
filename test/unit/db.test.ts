@@ -29,7 +29,7 @@ function makeEmbedding(i: number): number[] {
 
 describe("db operations", () => {
   beforeEach(() => {
-    openDb(TEST_DB_PATH);
+    openDb("", TEST_DB_PATH);
   });
 
   afterEach(() => {

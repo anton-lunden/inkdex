@@ -1,15 +1,19 @@
+import { createHash } from "node:crypto";
 import { mkdirSync } from "node:fs";
 import { homedir } from "node:os";
-import { join } from "node:path";
+import { join, resolve } from "node:path";
 import type { StatementSync } from "node:sqlite";
 import { DatabaseSync } from "node:sqlite";
 import { load as loadSqliteVec } from "sqlite-vec";
 import type { ChunkRow } from "../types.js";
 
-const STORE_DIR = join(homedir(), ".inkdex");
-
-function dbPath(): string {
-  return join(STORE_DIR, "index.db");
+function getDbPath(docsPath: string): string {
+  const hash = createHash("sha256")
+    .update(resolve(docsPath))
+    .digest("hex")
+    .slice(0, 16);
+  const cacheHome = process.env.XDG_CACHE_HOME ?? join(homedir(), ".cache");
+  return join(cacheHome, "inkdex", hash, "index.db");
 }
 const SCHEMA_VERSION = 4;
 
@@ -92,9 +96,10 @@ function prepareStatements(): void {
   };
 }
 
-export function openDb(overridePath?: string): void {
-  mkdirSync(STORE_DIR, { recursive: true });
-  db = new DatabaseSync(overridePath ?? dbPath(), { allowExtension: true });
+export function openDb(docsPath: string, overridePath?: string): void {
+  const resolvedDbPath = overridePath ?? getDbPath(docsPath);
+  mkdirSync(join(resolvedDbPath, ".."), { recursive: true });
+  db = new DatabaseSync(resolvedDbPath, { allowExtension: true });
   loadSqliteVec(db);
   db.exec("PRAGMA journal_mode = WAL");
   db.exec("PRAGMA foreign_keys = ON");

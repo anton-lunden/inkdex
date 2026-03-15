@@ -32,7 +32,7 @@ function createMockEmbedder(): Embedder {
 describe("indexDocs", () => {
   beforeEach(() => {
     mkdirSync(DOCS_DIR, { recursive: true });
-    openDb(TEST_DB_PATH);
+    openDb("", TEST_DB_PATH);
   });
 
   afterEach(() => {
